@@ -79,23 +79,56 @@ class MongoClientBuilder:
         return self.__mongo_db_url
 
 
+class MongoSink:
 
-class MongoButler:
+    def __init__(self):
+        self._mongo_client = None
+
+    @beartype
+    def save_data(self, data: dict, db_name: str, collection_name: str):
+        self._mongo_client[db_name][collection_name].insert_one(data)
+
+
+class MongoSearch:
+
+    def __init__(self):
+        self._mongo_client = None
+
+    @beartype
+    def find_data_and_print(self, db_name: str, collection_name: str):
+        curser = self._mongo_client[db_name][collection_name].find_one()
+
+        while True:
+            try:
+                retrive_data = next(curser)
+                print(retrive_data)
+            except StopIteration:
+                print("end of curser")
+                break
+            except TypeError:
+                print(curser.get("address"))
+                break
+
+
+class MongoButler(MongoSink, MongoSearch):
 
     def __init__(self, connection_url: str, username: str, password: str, **kwargs):
 
-        self.__client = MongoClientBuilder() \
+        super(MongoSink).__init__()
+
+        self._mongo_client = MongoClientBuilder() \
             .set_url(connection_url) \
             .set_username(username) \
             .set_password(password) \
             .build(**kwargs)
 
     def check_databases_list(self):
-        print(self.__client.list_database_names())
+        print(self._mongo_client.list_database_names())
 
-    def save_data(self, data: dict, db_name: str, collection_name: str):
+    # def save_data(self, data: dict, db_name: str, collection_name: str):
+    #
+    #     self._mongo_client[db_name][collection_name].insert_one(data)
 
-        self.__client[db_name][collection_name].insert_one(data)
 
 
 
