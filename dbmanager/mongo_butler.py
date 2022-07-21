@@ -1,11 +1,20 @@
+from beartype import beartype
 
+import pymongo
 from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 
-class MongoButler:
+class MongoClientBuilder:
 
     def __init__(self):
-        super(MongoButler).__init__()
+        """
+        Initializing MongoClient
+        setting the interface to set up mongodb connection information, including:
+        mongodb server url
+        username
+        password
+        """
 
         self.__mongo_db_url = None
         self.__mongo_db_user = None
@@ -14,20 +23,55 @@ class MongoButler:
         # Mongo client going to be built
         self.__mongo_client = None
 
-    def set_url(self, url):
+    def _check_mongo_client_is_valid(self):
+
+        try:
+            info = self.__mongo_client.server_info()
+        except OperationFailure as oerr:
+            print("Invalid Username")
+
+    @beartype
+    def set_url(self, url: str):
+        """
+        setup connection url
+        :param url:
+        :return:
+        """
         self.__mongo_db_url = url
+        return self
 
-    def set_user(self, user):
+    @beartype
+    def set_username(self, user: str):
+        """
+        setup username
+        :param user:
+        :return:
+        """
         self.__mongo_db_user = user
+        return self
 
-    def set_password(self, password):
+    @beartype
+    def set_password(self, password: str):
+        """
+        setup password
+        :param password:
+        :return:
+        """
         self.__mongo_db_password = password
+        return self
 
-    def get_mongo_client(self):
+
+    def build(self, *args, **kwargs) -> pymongo.MongoClient:
+
+        """
+        using provided mongodb connection url and login username, password to initialize mongo client
+        :return: MongoClient
+        """
 
         complete_connection_url = self.__mongo_db_url.format(self.__mongo_db_user, self.__mongo_db_password)
 
-        self.__mongo_client = MongoClient(complete_connection_url)
+        self.__mongo_client = MongoClient(complete_connection_url, **kwargs)
+        self._check_mongo_client_is_valid()
 
         return self.__mongo_client
 
@@ -36,23 +80,22 @@ class MongoButler:
 
 
 
-class MongoButlerBuilder:
+class MongoButler:
 
-    def __init__(self, mongo_butler=MongoButler()):
+    def __init__(self, connection_url: str, username: str, password: str, **kwargs):
 
-        self.mongo_butler = mongo_butler
+        self.__client = MongoClientBuilder() \
+            .set_url(connection_url) \
+            .set_username(username) \
+            .set_password(password) \
+            .build(**kwargs)
 
-    def set_mongo_db_url(self, url):
-        self.mongo_butler.set_url(url)
-        return self
+    def check_databases_list(self):
+        print(self.__client.list_database_names())
 
-    def set_mongo_db_user(self, user):
-        self.mongo_butler.set_user(user)
-        return self
+    def save_data(self, data: dict, db_name: str, collection_name: str):
 
-    def set_mongo_db_password(self, password):
-        self.mongo_butler.set_password(password)
-        return self
+        self.__client[db_name][collection_name].insert_one(data)
 
-    def build(self):
-        return self.mongo_butler.get_mongo_client()
+
+
