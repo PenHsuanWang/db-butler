@@ -1,4 +1,4 @@
-from dbmanager.mongo_butler import MongoClientBuilder
+from dbmanager.mongo_butler import MongoClientBuilder, SimpleSelectionFiler
 
 
 def test_construction():
@@ -16,3 +16,12 @@ def test_construction():
     print(info)
 
     assert mongo_client
+
+def test_simple_function():
+
+    simple_filter_function = SimpleSelectionFiler()
+
+    simple_filter_function.add_filtering_criteria("sarea", "信義區")
+
+    print(simple_filter_function)
+

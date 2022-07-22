@@ -79,6 +79,29 @@ class MongoClientBuilder:
         return self.__mongo_db_url
 
 
+class SimpleSelectionFiler(dict):
+
+    def __init__(self, val=None):
+
+        if val is None:
+            val = {}
+        super().__init__(val)
+
+
+
+    def add_filtering_criteria(self, key: str, value: object):
+        """
+        add new selection criteria
+        :param key:
+        :param value:
+        :return:
+        """
+        self[key] = value
+        return self
+
+
+
+
 class MongoSink:
 
     def __init__(self):
@@ -94,9 +117,16 @@ class MongoSearch:
     def __init__(self):
         self._mongo_client = None
 
+        self._filter_criteria = {}
+
+    @beartype
+    def find_one_data(self, db_name: str, collection_name: str):
+        data = self._mongo_client[db_name][collection_name].find_one()
+        return data
+
     @beartype
     def find_data_and_print(self, db_name: str, collection_name: str):
-        curser = self._mongo_client[db_name][collection_name].find_one()
+        curser = self._mongo_client[db_name][collection_name].find({"sarea": "信義區"})
 
         while True:
             try:
@@ -113,6 +143,23 @@ class MongoSearch:
 class MongoButler(MongoSink, MongoSearch):
 
     def __init__(self, connection_url: str, username: str, password: str, **kwargs):
+
+        """
+        Mongo Butler is designed for other application to invoke mongo db more easily.
+        Plays as an api to invoke mongo data.
+        Desire usage of Mongo Butler
+
+        >> mongo_db = MongoButler(
+        >>     connection_url="mongodb+srv://{}:{}@cathay-mongodb-training.qskew.mongodb.net/?retryWrites=true&w=majority",
+        >>     username='user',
+        >>     password='password'
+        >> )
+
+        :param connection_url:
+        :param username:
+        :param password:
+        :param kwargs:
+        """
 
         super(MongoSink).__init__()
 
