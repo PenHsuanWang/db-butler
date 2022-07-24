@@ -5,6 +5,9 @@ from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 
 
+from dbmanager.mongo.mongo_sink import MongoSink
+
+
 class MongoClientBuilder:
 
     def __init__(self):
@@ -102,14 +105,14 @@ class SimpleSelectionFiler(dict):
 
 
 
-class MongoSink:
-
-    def __init__(self):
-        self._mongo_client = None
-
-    @beartype
-    def save_data(self, data: dict, db_name: str, collection_name: str):
-        self._mongo_client[db_name][collection_name].insert_one(data)
+# class MongoSink:
+#
+#     def __init__(self):
+#         self._mongo_client = None
+#
+#     @beartype
+#     def save_data(self, data: dict, db_name: str, collection_name: str):
+#         self._mongo_client[db_name][collection_name].insert_one(data)
 
 
 class MongoSearch:
