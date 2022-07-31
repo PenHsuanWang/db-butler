@@ -1,5 +1,27 @@
 from beartype import beartype
 
+
+class SimpleSelectionFiler(dict):
+
+    def __init__(self, val=None):
+
+        if val is None:
+            val = {}
+        super().__init__(val)
+
+
+
+    def add_filtering_criteria(self, key: str, value: object):
+        """
+        add new selection criteria
+        :param key:
+        :param value:
+        :return:
+        """
+        self[key] = value
+        return self
+
+
 class MongoSearch:
 
     def __init__(self):

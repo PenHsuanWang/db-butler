@@ -83,35 +83,19 @@ class MongoClientBuilder:
         return self.__mongo_db_url
 
 
-class SimpleSelectionFiler(dict):
-
-    def __init__(self, val=None):
-
-        if val is None:
-            val = {}
-        super().__init__(val)
-
-
-
-    def add_filtering_criteria(self, key: str, value: object):
-        """
-        add new selection criteria
-        :param key:
-        :param value:
-        :return:
-        """
-        self[key] = value
-        return self
-
-
 class MongoButler(MongoSink, MongoSearch):
 
     def __init__(self, connection_url: str, username: str, password: str, **kwargs):
 
         """
         Mongo Butler is designed for other application to invoke mongo db more easily.
-        Plays as an api to invoke mongo data.
-        Desire usage of Mongo Butler
+        encapsulate pymongo sdk into single interface, people just need to prepare their data or ready to implement the
+        data using logic. The I/O from local program to mongoDB is handling by this butler.
+
+        Initializing the Mongo Butler at first. The mongo clint will be built internally using `MongoClientBuilder`.
+        Every database client connection is handling by builder. user just need to provide the connection parameters.
+
+        Desire usage of Mongo Butler as following.
 
         >> mongo_db = MongoButler(
         >>     connection_url="mongodb+srv://{}:{}@cathay-mongodb-training.qskew.mongodb.net/?retryWrites=true&w=majority",
@@ -136,9 +120,6 @@ class MongoButler(MongoSink, MongoSearch):
     def check_databases_list(self):
         print(self._mongo_client.list_database_names())
 
-    # def save_data(self, data: dict, db_name: str, collection_name: str):
-    #
-    #     self._mongo_client[db_name][collection_name].insert_one(data)
 
 
 

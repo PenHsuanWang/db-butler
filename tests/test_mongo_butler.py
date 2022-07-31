@@ -1,6 +1,6 @@
 import pandas
 
-from dbmanager.mongo_butler import MongoClientBuilder, SimpleSelectionFiler, MongoButler
+from dbmanager.mongo_butler import MongoClientBuilder, MongoButler
 # from dbmanager.mongo.mongo_sink import MongoSink
 
 def test_construction():
@@ -18,14 +18,6 @@ def test_construction():
     print(info)
 
     assert mongo_butler
-
-def test_simple_function():
-
-    simple_filter_function = SimpleSelectionFiler()
-
-    simple_filter_function.add_filtering_criteria("sarea", "信義區")
-
-    print(simple_filter_function)
 
 
 def test_mongo_sink():
