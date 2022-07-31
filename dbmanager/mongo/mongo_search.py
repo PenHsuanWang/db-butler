@@ -1,7 +1,7 @@
 from beartype import beartype
 
 
-class SimpleSelectionFiler(dict):
+class SimpleSelectionFilter(dict):
 
     def __init__(self, val=None):
 
@@ -21,10 +21,15 @@ class SimpleSelectionFiler(dict):
         self[key] = value
         return self
 
+    def applied_filter(self):
+        return self
 
-class MongoSearch:
+
+class MongoSearch(SimpleSelectionFilter):
 
     def __init__(self):
+
+        super().__init__()
         print("Print from Mongo Search Class")
         self._mongo_client = None
 
@@ -38,7 +43,7 @@ class MongoSearch:
     @beartype
     def find_data_and_print(self, db_name: str, collection_name: str):
         print("invoking finding method from separation class")
-        curser = self._mongo_client[db_name][collection_name].find({"sarea": "信義區"})
+        curser = self._mongo_client[db_name][collection_name].find(self.applied_filter())
 
         while True:
             try:

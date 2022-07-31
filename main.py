@@ -19,5 +19,7 @@ if __name__ == '__main__':
     # data = {"name": "pwang", "age": 29, "address": {"street": "松仁路七號", "city": "台北市", "country": "Taiwan"}}
     # mongo_butler.save_data(data=data, db_name="python_sdk_test", collection_name="person")
     # data = mongo_butler.find_one_data(db_name="youbike_database", collection_name="taipei_youbike_records")
+
+    mongo_butler.add_filtering_criteria("sarea", "大安區")
     mongo_butler.find_data_and_print(db_name="youbike_database", collection_name="taipei_youbike_records")
     # print(data)
