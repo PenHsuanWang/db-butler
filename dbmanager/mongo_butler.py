@@ -6,6 +6,7 @@ from pymongo.errors import OperationFailure
 
 
 from dbmanager.mongo.mongo_sink import MongoSink
+from dbmanager.mongo.mongo_search import MongoSearch
 
 
 class MongoClientBuilder:
@@ -103,46 +104,6 @@ class SimpleSelectionFiler(dict):
         return self
 
 
-
-
-# class MongoSink:
-#
-#     def __init__(self):
-#         self._mongo_client = None
-#
-#     @beartype
-#     def save_data(self, data: dict, db_name: str, collection_name: str):
-#         self._mongo_client[db_name][collection_name].insert_one(data)
-
-
-class MongoSearch:
-
-    def __init__(self):
-        self._mongo_client = None
-
-        self._filter_criteria = {}
-
-    @beartype
-    def find_one_data(self, db_name: str, collection_name: str):
-        data = self._mongo_client[db_name][collection_name].find_one()
-        return data
-
-    @beartype
-    def find_data_and_print(self, db_name: str, collection_name: str):
-        curser = self._mongo_client[db_name][collection_name].find({"sarea": "信義區"})
-
-        while True:
-            try:
-                retrive_data = next(curser)
-                print(retrive_data)
-            except StopIteration:
-                print("end of curser")
-                break
-            except TypeError:
-                print(curser.get("address"))
-                break
-
-
 class MongoButler(MongoSink, MongoSearch):
 
     def __init__(self, connection_url: str, username: str, password: str, **kwargs):
@@ -164,7 +125,7 @@ class MongoButler(MongoSink, MongoSearch):
         :param kwargs:
         """
 
-        super(MongoSink).__init__()
+        super().__init__()
 
         self._mongo_client = MongoClientBuilder() \
             .set_url(connection_url) \
